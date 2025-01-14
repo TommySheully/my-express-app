@@ -15,7 +15,8 @@ export const getUsersBd = async (req: Request, res: Response<SuccessResponse<Use
 
     res.status(200).json({ data: result.rows, message: 'Пользователи успешно найдены' })
   } catch (error) {
-    res.status(500).json({ data: null, message: 'Ошибка при получении пользователей' })
+    console.log(error)
+    res.status(500).json({ data: error, message: 'Ошибка при получении пользователей' })
   }
 }
 
@@ -32,24 +33,25 @@ export const getUserBdById = async (req: Request, res: Response<SuccessResponse<
 
     res.status(200).json({ data: user, message: 'Пользователь успешно найден' })
   } catch (error) {
-    console.error('Ошибка при получении пользователя:', error)
     res.status(500).json({ data: null, message: 'Ошибка при получении пользователя' })
   }
 }
 
 export const createUserBd = async (req: Request, res: Response<SuccessResponse<User>|ErrorResponse>): Promise<void> => {
   const { name, email } = req.body
+  const id = crypto.randomUUID()
+
   try {
     const result = await pool.query<User>(
-      'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',
-      [name, email]
+      'INSERT INTO users (id, name, email) VALUES ($1, $2, $3) RETURNING *',
+      [id, name, email]
     )
     const newUser = result.rows[0]
 
     res.status(201).json({ data: newUser, message: 'Пользователь успешно добавлен' })
   } catch (error) {
     console.error('Ошибка при добавлении пользователя:', error)
-    res.status(500).json({ data: null, message: 'Ошибка при добавлении пользователя' })
+    res.status(500).json({ data: error, message: 'Ошибка при добавлении пользователя' })
   }
 }
 

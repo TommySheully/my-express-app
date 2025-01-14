@@ -7,6 +7,6 @@ export interface SuccessResponse<T> {
 }
 
 export interface ErrorResponse {
-  data: null | Record<string, ValidationError>
+  data: null | Record<string, ValidationError> |  unknown
   message: string;
 }
